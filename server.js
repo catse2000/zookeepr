@@ -10,6 +10,9 @@ app.use(express.urlencoded({ extended: true}));
 // parse incoming JSON data
 app.use(express.json());
 
+// used to reference where other assets (like CSS and Javascript) are when calling a page through the server
+app.use(express.static('public'));
+
 const { animals } = require('./data/animals');
 
 function filterByQuery(query, animalsArray) {
@@ -60,7 +63,7 @@ function createNewAnimal(body, animalsArray) {
     const animal = body;
     animalsArray.push(animal);
     fs.writeFileSync(
-        path.join(__dirname, './data/animals/json'),
+        path.join(__dirname, './data/animals.json'),
         JSON.stringify({ animals: animalsArray }, null, 2)
     );
 
@@ -83,6 +86,18 @@ app.get('/api/animals/:id', (req, res) => {
     else{
         res.send(404);
     }
+});
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
+app.get('/animals', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/animals.html'));
+});
+
+app.get('/zookeepers', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/zookeepers.html'));
 });
 
 app.post('/api/animals', (req, res) => {
